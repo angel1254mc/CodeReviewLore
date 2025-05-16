@@ -14,7 +14,7 @@ jobs:
                   echo "Comment: ${{ github.event.comment }}"
                   echo "Action: ${{ github.event.action }}"
     pr_commented:
-        if: ${{ github.event.issue.pull_request && github.event.comment == 'Review' }}
+        if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Review' }}
         uses: ./.github/workflows/manual.yml
         with:
             type: "review"
