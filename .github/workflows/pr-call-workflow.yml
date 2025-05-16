@@ -1,7 +1,8 @@
+name: AI Review Comment
+permissions: read-all
 on:
     issue_comment:
         types: [created, edited]
-permissions: read-all
 jobs:
     pr_commented:
         if: ${{ github.event.issue.pull_request && github.event.comment == 'Review' }}
