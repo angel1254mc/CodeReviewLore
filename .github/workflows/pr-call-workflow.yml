@@ -12,6 +12,7 @@ jobs:
                   echo "Below are the inputs passed to the workflow:"
                   echo "${{ toJson(github.event) }}"
     pr_commented:
+        needs: echo_details
         if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Review' }}
         uses: ./.github/workflows/manual.yml
         with:
