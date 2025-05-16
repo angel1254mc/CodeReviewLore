@@ -28,7 +28,7 @@ jobs:
     finalize:
         runs-on: ubuntu-latest
         needs: pr_commented
-        if: (github.event.issue.pull_request && github.event.comment.body == 'Review' && needs.pr_commented.result == 'skipped') || success()
+        if: (needs.pr_commented.result == 'skipped') || success()
         steps:
             - name: Finalize
               run: echo "Finalizing the workflow after the review comment."
