@@ -5,6 +5,7 @@ on:
         types: [created, edited]
 jobs:
     echo_details:
+        name: Print details for debugging
         runs-on: ubuntu-latest
         steps:
             - name: Echo details
@@ -12,6 +13,7 @@ jobs:
                   echo "Below are the inputs passed to the workflow:"
                   echo "${{ toJson(github.event) }}"
     pr_commented_review:
+        name: "Run the workflow to generate a review"
         needs: echo_details
         if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Review' }}
         uses: ./.github/workflows/manual.yml
@@ -25,6 +27,7 @@ jobs:
             MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
             MODEL_REVIEW_JWT: ${{ secrets.JWT }}
     pr_commented_summary:
+        name: "Run the workflow to generate a summary"
         needs: echo_details
         if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Summary' }}
         uses: ./.github/workflows/manual.yml
@@ -38,6 +41,7 @@ jobs:
             MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
             MODEL_REVIEW_JWT: ${{ secrets.JWT }}
     finalize:
+        name: "Finish up the flow"
         needs: [pr_commented_review, pr_commented_summary]
         if: (needs.pr_commented_review.result == 'skipped' || needs.pr_commented_summary.result == 'skipped') || success()
         runs-on: ubuntu-latest
