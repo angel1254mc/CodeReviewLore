@@ -39,10 +39,17 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Is review or summary?
-              run: echo "You've chosen to have the model ${{ inputs.type }} your Pull Request"
-            - if: ${{ inputs.type == 'review'}}
+            - name: Run Review
+              if: (inputs.type == 'review')
               run: |
+                  echo "Running Summary"
+                  echo "Pull Request Number: ${{ inputs.pr_number }}"
+                  echo "Repository: ${{ inputs.repo }}"
+                  echo "Owner: ${{ inputs.owner }}"
+            - name: Run Summary
+              if: ${{ inputs.type == 'summary'}}
+              run: |
+                  echo "Running Summary"
                   echo "Pull Request Number: ${{ inputs.pr_number }}"
                   echo "Repository: ${{ inputs.repo }}"
                   echo "Owner: ${{ inputs.owner }}"

@@ -11,7 +11,7 @@ jobs:
               run: |
                   echo "Below are the inputs passed to the workflow:"
                   echo "${{ toJson(github.event) }}"
-    pr_commented:
+    pr_commented_review:
         needs: echo_details
         if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Review' }}
         uses: ./.github/workflows/manual.yml
@@ -24,11 +24,24 @@ jobs:
             GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
             MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
             MODEL_REVIEW_JWT: ${{ secrets.JWT }}
-
+    pr_commented_summary:
+        needs: echo_details
+        if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Summary' }}
+        uses: ./.github/workflows/manual.yml
+        with:
+            type: "summary"
+            pr_number: ${{ github.event.issue.number }}
+            repo: ${{ github.event.repository.full_name }}
+            owner: ${{ github.event.repository.owner.login }}
+        secrets:
+            GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
+            MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
+            MODEL_REVIEW_JWT: ${{ secrets.JWT }}
     finalize:
         runs-on: ubuntu-latest
-        needs: pr_commented
-        if: (needs.pr_commented.result == 'skipped') || success()
+        needs: [pr_commented_review, pr_commented_summary]
+        if: (needs.pr_commented_review.result == 'skipped' || needs.pr_commented_summary.result == 'skipped') || success()
+
         steps:
             - name: Finalize
               run: echo "Finalizing the workflow after the review comment."
