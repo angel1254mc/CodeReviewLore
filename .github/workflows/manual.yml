@@ -1,4 +1,3 @@
-
 name: Pull Request Workflow
 permissions: read-all
 env:
@@ -9,18 +8,30 @@ env:
     # Long-lived JWT token to identify the caller.
     MODEL_REVIEW_JWT: secrets.JWT
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
-    workflow_dispatch:
+    workflow_call:
         # Inputs the workflow accepts.
         inputs:
             type:
-                type: choice
-                description: Review or Summary?
-                options:
-                    - review
-                    - summarize
+                type: string
+                required: true
+            pr_number:
+                type: string
+                required: true
+            repo:
+                type: string
+                required: true
+            owner:
+                type: string
+                required: true
+
+        secrets:
+            GITHUB_AUTH:
+                required: true
+            MODEL_REVIEW_CALLBACK:
+                required: true
+            MODEL_REVIEW_JWT:
+                required: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -29,8 +40,9 @@ jobs:
 
         steps:
             - name: Is review or summary?
-              run: echo "You've chosen to have the model ${{ inputs.name }} your Pull Request"
+              run: echo "You've chosen to have the model ${{ inputs.type }} your Pull Request"
             - if: ${{ inputs.type == 'review'}}
               run: |
-                  echo "Pull Request Number: ${{ github.event.number }}"
-                  echo "Repository: ${{ github.repository }}"
+                  echo "Pull Request Number: ${{ inputs.pr_number }}"
+                  echo "Repository: ${{ inputs.repo }}"
+                  echo "Owner: ${{ inputs.owner }}"

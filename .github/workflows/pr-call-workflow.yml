@@ -1,0 +1,20 @@
+on:
+    issue_comment:
+        types: [created, edited]
+
+jobs:
+    pr_commented:
+        # This job only runs for pull request comments
+        name: PR comment
+        runs-on: ubuntu-latest
+        if: ${{ github.event.issue.pull_request && github.event.comment == 'Review' }}
+        uses: ./.github/workflows/manual.yml
+        with:
+            type: "review"
+            pr_number: ${{ github.event.issue.number }}
+            repo: ${{ github.event.repository.name }}
+            owner: ${{ github.event.repository.owner.login }}
+         secrets:
+            GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
+            MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
+            MODEL_REVIEW_JWT: ${{ secrets.JWT }}
