@@ -4,6 +4,15 @@ on:
     issue_comment:
         types: [created, edited]
 jobs:
+    echo_details:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Echo details
+              run: |
+                  echo "Below are the inputs passed to the workflow:"
+                  echo "${{ toJson(github.event) }}"
+                  echo "Comment: ${{ github.event.comment }}"
+                  echo "Action: ${{ github.event.action }}"
     pr_commented:
         if: ${{ github.event.issue.pull_request && github.event.comment == 'Review' }}
         uses: ./.github/workflows/manual.yml
