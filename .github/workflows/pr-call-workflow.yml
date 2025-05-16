@@ -11,15 +11,13 @@ jobs:
               run: |
                   echo "Below are the inputs passed to the workflow:"
                   echo "${{ toJson(github.event) }}"
-                  echo "Comment: ${{ github.event.comment }}"
-                  echo "Action: ${{ github.event.action }}"
     pr_commented:
         if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Review' }}
         uses: ./.github/workflows/manual.yml
         with:
             type: "review"
             pr_number: ${{ github.event.issue.number }}
-            repo: ${{ github.event.repository.name }}
+            repo: ${{ github.event.repository.full_name }}
             owner: ${{ github.event.repository.owner.login }}
         secrets:
             GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
