@@ -23,3 +23,11 @@ jobs:
             GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
             MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
             MODEL_REVIEW_JWT: ${{ secrets.JWT }}
+
+    finalize:
+        runs-on: ubuntu-latest
+        needs: pr_commented
+        if: (github.event.issue.pull_request && github.event.comment.body == 'Review' && needs.pr_commented.result == 'skipped') || success()
+        steps:
+            - name: Finalize
+              run: echo "Finalizing the workflow after the review comment."
