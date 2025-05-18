@@ -58,6 +58,10 @@ jobs:
         runs-on: "ubuntu-latest"
         needs: start
         steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
             - name: diff to JSON
               run: |
                   # Get the diff between HEAD and the main branch (or base for PR)
