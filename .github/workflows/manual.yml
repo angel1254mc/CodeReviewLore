@@ -75,8 +75,8 @@ jobs:
                        "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/files" \
                        > diff.json
 
-                    - name: Upload diff as artifact
-                      uses: actions/upload-artifact@v4
-                      with:
-                          name: git-diff-json
-                          path: diff.json
+            - name: Upload diff as artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: git-diff-json
+                  path: diff.json
