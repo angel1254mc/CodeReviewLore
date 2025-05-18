@@ -62,20 +62,21 @@ jobs:
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - name: diff to JSON
+            - name: Get PR diff from GitHub API
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  PR_NUMBER: ${{inputs.pr_number}}
+                  REPO: ${{ inputs.repo }}
               run: |
-                  # Get the diff between HEAD and the main branch (or base for PR)
-                  if [ "${{ github.event_name }}" = "pull_request" ]; then
-                    git fetch origin ${{ github.base_ref }}
-                    DIFF=$(git diff origin/${{ github.base_ref }}...HEAD)
-                  else
-                    git fetch origin main
-                    DIFF=$(git diff origin/main...HEAD)
-                  fi
-                  # Escape for JSON and write to file
-                  echo "$DIFF" | jq -Rs '{diff: .}' > diff.json
-            - name: Upload diff as artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: git-diff-json
-                  path: diff.json
+                  echo "Fetching PR #$PR_NUMBER diff from API"
+
+                  curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+                       -H "Accept: application/vnd.github.v3+json" \
+                       "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/files" \
+                       > diff.json
+
+                    - name: Upload diff as artifact
+                      uses: actions/upload-artifact@v4
+                      with:
+                          name: git-diff-json
+                          path: diff.json

@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/workflows/manual.yml
         with:
             type: "review"
-            pr_number: ${{ github.event.issue.number }}
+            pr_number: "${{ github.event.pull_request.number || github.event.issue.number }}"
             repo: ${{ github.event.repository.full_name }}
             owner: ${{ github.event.repository.owner.login }}
         secrets:
@@ -33,7 +33,7 @@ jobs:
         uses: ./.github/workflows/manual.yml
         with:
             type: "summary"
-            pr_number: ${{ github.event.issue.number }}
+            pr_number: "${{ github.event.pull_request.number || github.event.issue.number }}"
             repo: ${{ github.event.repository.full_name }}
             owner: ${{ github.event.repository.owner.login }}
         secrets:
