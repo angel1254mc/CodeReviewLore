@@ -22,9 +22,6 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const diffRaw = fs.readFileSync(diffPath, "utf-8");
         const diff = JSON.parse(diffRaw);
 
-        console.log(diff, "diff content as JSON");
-        console.log(diffRaw, "diff content as raw text");
-
         // Step 1: Send diff to LLM for review
         const prompt =
             "As a senior developer, please review the following code diff and provide feedback as if commenting on a GitHub PR. Please provide a line to put the comment on, the path of the file you are reviewing, and the actual body/content of your review comment. Include feedback on code quality, potential issues, and suggestions for improvement. If you have no feedback, please respond with an empty array. The diff is in JSON format below:";

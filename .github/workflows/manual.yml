@@ -1,9 +1,7 @@
 name: Pull Request Workflow
 permissions: read-all
 env:
-    GITHUB_AUTH: secrets.GITHUB_AUTH
     PR_NUMBER: ${{ github.event.number }}
-
 on:
     workflow_call:
         # Inputs the workflow accepts.
