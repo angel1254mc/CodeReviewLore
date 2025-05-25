@@ -13,6 +13,10 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
         const diffPath = path.resolve("diff.json");
+
+        if (!fs.existsSync(diffPath)) {
+            throw new Error(`Diff file not found at ${diffPath}`);
+        }
         const diffRaw = fs.readFileSync(diffPath, "utf-8");
         const diff = JSON.parse(diffRaw);
 
