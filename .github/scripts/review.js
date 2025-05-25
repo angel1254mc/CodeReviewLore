@@ -11,7 +11,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const token = process.env.GITHUB_AUTH;
         const prNumber = process.env.PR_NUMBER;
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-
+        console.log("Current Working Directory:", process.cwd());
         const diffPath = path.resolve("diff.json");
 
         if (!fs.existsSync(diffPath) || !fs.statSync(diffPath).isFile()) {
