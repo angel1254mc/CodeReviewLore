@@ -11,7 +11,6 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const token = process.env.GITHUB_AUTH;
         const prNumber = process.env.PR_NUMBER;
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-        console.log("Current Working Directory:", process.cwd());
         const diffPath = path.resolve("diff.json");
 
         if (!fs.existsSync(diffPath) || !fs.statSync(diffPath).isFile()) {
@@ -22,12 +21,19 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const diffRaw = fs.readFileSync(diffPath, "utf-8");
         const diff = JSON.parse(diffRaw);
 
+        const reviewInfo = {
+            owner: owner,
+            repo: repo,
+            pull_number: Number(prNumber),
+            diffRaw: diffRaw,
+        };
+
         // Step 1: Send diff to LLM for review
         const prompt =
-            "As a senior developer, please review the following code diff and provide feedback as if commenting on a GitHub PR. Please provide a line to put the comment on, the path of the file you are reviewing, and the actual body/content of your review comment. Include feedback on code quality, potential issues, and suggestions for improvement. If you have no feedback, please respond with an empty array. The diff is in JSON format below:";
+            "As a senior developer, please review the following code diff and provide feedback as if commenting on a GitHub PR. Please provide a line to put the comment on, the path of the file you are reviewing, and the actual body/content of your review comment. Include feedback on code quality, potential issues, and suggestions for improvement. If you have no feedback, please respond with an empty array. The diff can be found in the JSON object below:";
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
-            contents: prompt + "\n\n" + diffRaw,
+            contents: prompt + "\n\n" + reviewInfo,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
