@@ -2,11 +2,10 @@ name: Pull Request Workflow
 permissions: read-all
 env:
     GITHUB_AUTH: secrets.GITHUB_AUTH
-    MODEL_REVIEW_CALLBACK: secrets.MODEL_REVIEW_CALLBACK
     PR_NUMBER: ${{ github.event.number }}
 
-    # Long-lived JWT token to identify the caller.
-    MODEL_REVIEW_JWT: secrets.JWT
+    # Yeah that's right, I'm putting API keys in this thang.
+    GEMINI_API_KEY: secrets.GEMINI_API_KEY
 
 on:
     workflow_call:
@@ -80,3 +79,32 @@ jobs:
               with:
                   name: git-diff-json
                   path: diff.json
+
+    review:
+        runs-on: ubuntu-latest
+        needs: retrieve
+
+        steps:
+            - uses: actions/download-artifact@v4
+              with:
+                  name: git-diff-json
+                  path: diff.json
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install dependencies
+              run: npm install @actions/core @actions/github @google/genai
+
+            - name: Run Review Script
+              run: node .github/scripts/review.js
+              env:
+                  GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
+                  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+                  PR_NUMBER: ${{ inputs.pr_number }}
+                  GITHUB_REPOSITORY: ${{ github.repository }}
