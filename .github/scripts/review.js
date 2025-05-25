@@ -30,21 +30,23 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
             "As a senior developer, please review the following code diff and provide feedback as if commenting on a GitHub PR. Please provide a line to put the comment on, the path of the file you are reviewing, and the actual body/content of your review comment. Include feedback on code quality, potential issues, and suggestions for improvement. If you have no feedback, please respond with an empty array. The diff is in JSON format below:";
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
-            contents: prompt + "\n\n" + diff,
+            contents: prompt + "\n\n" + diffRaw,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
-                    type: Type.OBJECT,
-
-                    properties: {
-                        path: {
-                            type: Type.STRING,
-                        },
-                        line: {
-                            type: Type.NUMBER,
-                        },
-                        body: {
-                            type: Type.STRING,
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            path: {
+                                type: Type.STRING,
+                            },
+                            line: {
+                                type: Type.NUMBER,
+                            },
+                            body: {
+                                type: Type.STRING,
+                            },
                         },
                     },
                 },
