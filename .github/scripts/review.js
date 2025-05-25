@@ -30,7 +30,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
         // Step 1: Send diff to LLM for review
         const prompt =
-            "As a senior developer, please review the following code diff and provide feedback as if commenting on a GitHub PR. Please provide a line to put the comment on, the path of the file you are reviewing, and the actual body/content of your review comment. Include feedback on code quality, potential issues, and suggestions for improvement. If you have no feedback, please respond with an empty array. The diff can be found in the JSON object below:";
+            "As a senior developer, please review the following code diff and provide feedback as if commenting on a GitHub PR. Please provide a line to put the comment on, the path of the file you are reviewing, and the actual body/content of your review comment. Include feedback on code quality, potential issues, and suggestions for improvement. If you have no feedback, please respond with a comment that says 'Code Review Complete and APPROVED :thumbs_up:'. The diff can be found in the JSON object below:";
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
             contents: prompt + "\n\n" + reviewInfo,
