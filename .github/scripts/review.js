@@ -8,7 +8,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 (async () => {
     try {
-        const token = process.env.GITHUB_TOKEN;
+        const token = process.env.GITHUB_AUTH;
         const prNumber = process.env.PR_NUMBER;
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
         console.log("Current Working Directory:", process.cwd());
