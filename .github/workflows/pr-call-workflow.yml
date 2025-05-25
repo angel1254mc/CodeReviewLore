@@ -23,7 +23,6 @@ jobs:
             repo: ${{ github.event.repository.full_name }}
             owner: ${{ github.event.repository.owner.login }}
         secrets:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
             MODEL_REVIEW_JWT: ${{ secrets.JWT }}
             GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -38,7 +37,6 @@ jobs:
             repo: ${{ github.event.repository.full_name }}
             owner: ${{ github.event.repository.owner.login }}
         secrets:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
             MODEL_REVIEW_JWT: ${{ secrets.JWT }}
             GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
