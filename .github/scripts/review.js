@@ -69,22 +69,36 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
             prNumber,
         });
         const sha = pullResponse?.data?.[0]?.head?.sha;
+        const reviewComments = [];
+        const reviewAction = "APPROVE";
+        const reviewBody = undefined;
         if (!sha) {
             console.log(pullResponse);
             throw new Error("Could not retrieve pull request head SHA");
         }
         for (const comment of comments) {
-            await octokit.rest.pulls.createReviewComment({
-                owner,
-                repo,
-                pull_number: Number(prNumber),
-                body: comment.body,
-                commit_id: sha,
-                path: comment.path,
-                line: comment.line,
-                side: "RIGHT",
-            });
+            if (
+                comment.body === "Code Review Complete and APPROVED :thumbs_up:"
+            ) {
+                reviewAction = "APPROVE";
+                reviewBody = comment.body;
+            } else {
+                reviewComments.push({
+                    path: comment.path,
+                    line: comment.line,
+                    body: comment.body,
+                    side: "RIGHT",
+                });
+            }
         }
+
+        await octokit.rest.pulls.createReview({
+            owner,
+            repo,
+            pull_number: Number(prNumber),
+            body: reviewBody,
+            event: reviewAction,
+        });
 
         console.log(`✅ Posted ${comments.length} review comment(s)`);
     } catch (err) {
