@@ -61,18 +61,23 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
         // Step 2: Post each comment to the PR
         const octokit = github.getOctokit(token);
-        console.log(
-            "Let me see that context...",
-            JSON.stringify(github.context, null, 2)
-        );
+
+        // Getting head of pull request
+        const pullResponse = await octokit.rest.pulls.get({
+            owner,
+            repo,
+            pull_number,
+        });
+        if (!pullResponse.data.head || !pullResponse.data.head.sha) {
+            throw new Error("Could not retrieve pull request head SHA");
+        }
         for (const comment of comments) {
-            console.log;
             await octokit.rest.pulls.createReviewComment({
                 owner,
                 repo,
                 pull_number: Number(prNumber),
                 body: comment.body,
-                commit_id: github.context.payload.pull_request.head.sha,
+                commit_id: pullResponse.data.head.sha,
                 path: comment.path,
                 line: comment.line,
                 side: "RIGHT",
