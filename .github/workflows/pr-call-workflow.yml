@@ -1,5 +1,5 @@
 name: AI Review Comment
-permissions: read-all
+permissions: write-all
 on:
     issue_comment:
         types: [created, edited]
