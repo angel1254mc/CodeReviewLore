@@ -12,7 +12,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const prNumber = process.env.PR_NUMBER;
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
-        const diffPath = path.resolve("git-diff-json", "diff.json");
+        const diffPath = path.resolve("./", "diff.json");
         const diffRaw = fs.readFileSync(diffPath, "utf-8");
         const diff = JSON.parse(diffRaw);
 
