@@ -68,7 +68,8 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
             repo,
             prNumber,
         });
-        if (!pullResponse.data.head || !pullResponse.data.head.sha) {
+        const sha = pullResponse?.data?.[0]?.head?.sha;
+        if (!sha) {
             console.log(pullResponse);
             throw new Error("Could not retrieve pull request head SHA");
         }
@@ -78,7 +79,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
                 repo,
                 pull_number: Number(prNumber),
                 body: comment.body,
-                commit_id: pullResponse.data.head.sha,
+                commit_id: sha,
                 path: comment.path,
                 line: comment.line,
                 side: "RIGHT",
