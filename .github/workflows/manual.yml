@@ -85,11 +85,6 @@ jobs:
         needs: retrieve
 
         steps:
-            - uses: actions/download-artifact@v4
-              with:
-                  name: git-diff-json
-                  path: diff.json
-
             - name: Checkout code
               uses: actions/checkout@v4
 
@@ -101,8 +96,10 @@ jobs:
             - name: Install dependencies
               run: npm install @actions/core @actions/github @google/genai
 
-            - name: WHERE IS ARTIFACT
-              run: ls -R
+            - uses: actions/download-artifact@v4
+              with:
+                  name: git-diff-json
+                  path: diff.json
 
             - name: Run Review Script
               run: node .github/scripts/review.js
