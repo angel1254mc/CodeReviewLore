@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const core = require("@actions/core");
 const github = require("@actions/github");
-const { GoogleGenAI } = require("@google/genai");
+const { GoogleGenAI, Type } = require("@google/genai");
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
