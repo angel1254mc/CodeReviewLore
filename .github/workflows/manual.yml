@@ -104,6 +104,10 @@ jobs:
             - name: List one more time for good measure
               run: ls -la
 
+            - name: Show me what's in the diff
+              run: cat diff.json
+              shell: bash
+
             - name: Run Review Script
               run: node .github/scripts/review.js
               env:
