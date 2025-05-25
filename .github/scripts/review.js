@@ -61,7 +61,12 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
         // Step 2: Post each comment to the PR
         const octokit = github.getOctokit(token);
+        console.log(
+            "Let me see that context...",
+            JSON.stringify(github.context, null, 2)
+        );
         for (const comment of comments) {
+            console.log;
             await octokit.rest.pulls.createReviewComment({
                 owner,
                 repo,
