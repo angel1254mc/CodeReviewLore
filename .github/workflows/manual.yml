@@ -5,7 +5,7 @@ env:
     PR_NUMBER: ${{ github.event.number }}
 
     # Yeah that's right, I'm putting API keys in this thang.
-    GEMINI_API_KEY: secrets.GEMINI_API_KEY
+    GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
 on:
     workflow_call:
