@@ -20,7 +20,7 @@ on:
                 required: true
 
         secrets:
-            GITHUB_AUTH:
+            GITHUB_TOKEN:
                 required: true
             MODEL_REVIEW_CALLBACK:
                 required: true
@@ -100,7 +100,7 @@ jobs:
             - name: Run Review Script
               run: node .github/scripts/review.js
               env:
-                  GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
                   PR_NUMBER: ${{ inputs.pr_number }}
                   GITHUB_REPOSITORY: ${{ github.repository }}
