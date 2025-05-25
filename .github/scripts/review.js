@@ -14,8 +14,10 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
         const diffPath = path.resolve("diff.json");
 
-        if (!fs.existsSync(diffPath)) {
-            throw new Error(`Diff file not found at ${diffPath}`);
+        if (!fs.existsSync(diffPath) || !fs.statSync(diffPath).isFile()) {
+            throw new Error(
+                `Diff file not found or is not a file at ${diffPath}`
+            );
         }
         const diffRaw = fs.readFileSync(diffPath, "utf-8");
         const diff = JSON.parse(diffRaw);
