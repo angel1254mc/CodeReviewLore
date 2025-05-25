@@ -70,8 +70,8 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         });
         const sha = pullResponse?.data?.[0]?.head?.sha;
         const reviewComments = [];
-        const reviewAction = "APPROVE";
-        const reviewBody = undefined;
+        let reviewAction = "APPROVE";
+        let reviewBody = undefined;
         if (!sha) {
             console.log(pullResponse);
             throw new Error("Could not retrieve pull request head SHA");
