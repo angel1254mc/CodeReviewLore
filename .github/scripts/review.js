@@ -70,7 +70,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         });
         const sha = pullResponse?.data?.[0]?.head?.sha;
         const reviewComments = [];
-        let reviewAction = "APPROVE";
+        let reviewAction = "COMMENT";
         let reviewBody = undefined;
         if (!sha) {
             console.log(pullResponse);
@@ -80,7 +80,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
             if (
                 comment.body === "Code Review Complete and APPROVED :thumbs_up:"
             ) {
-                reviewAction = "APPROVE";
+                reviewAction = "COMMENT";
                 reviewBody = comment.body;
             } else {
                 reviewComments.push({
