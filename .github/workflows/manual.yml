@@ -99,18 +99,6 @@ jobs:
             - uses: actions/download-artifact@v4
               with:
                   name: git-diff-json
-                  path: diff.json
-
-            - name: List one more time for good measure
-              run: ls -la
-
-            - name: Show me what's in the diff
-              shell: bash
-              run: |
-                  echo "Contents of diff.json:"
-                  cd diff.json
-                  ls -la
-                  cat diff.json
 
             - name: Run Review Script
               run: node .github/scripts/review.js
