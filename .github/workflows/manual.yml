@@ -101,6 +101,9 @@ jobs:
                   name: git-diff-json
                   path: diff.json
 
+            - name: List one more time for good measure
+              run: ls -la
+
             - name: Run Review Script
               run: node .github/scripts/review.js
               env:
