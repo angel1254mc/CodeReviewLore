@@ -26,6 +26,7 @@ jobs:
             GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
             MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
             MODEL_REVIEW_JWT: ${{ secrets.JWT }}
+            GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     pr_commented_summary:
         name: "Run the workflow to generate a summary"
         needs: echo_details
@@ -40,6 +41,7 @@ jobs:
             GITHUB_AUTH: ${{ secrets.GITHUB_AUTH }}
             MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
             MODEL_REVIEW_JWT: ${{ secrets.JWT }}
+            GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     finalize:
         name: "Finish up the flow"
         needs: [pr_commented_review, pr_commented_summary]
