@@ -66,7 +66,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const pullResponse = await octokit.rest.pulls.get({
             owner,
             repo,
-            pull_number,
+            prNumber,
         });
         if (!pullResponse.data.head || !pullResponse.data.head.sha) {
             throw new Error("Could not retrieve pull request head SHA");
