@@ -105,8 +105,12 @@ jobs:
               run: ls -la
 
             - name: Show me what's in the diff
-              run: cat diff.json
               shell: bash
+              run: |
+                  echo "Contents of diff.json:"
+                  cd diff.json
+                  ls -la
+                  cat diff.json
 
             - name: Run Review Script
               run: node .github/scripts/review.js
