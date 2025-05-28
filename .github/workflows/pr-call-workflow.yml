@@ -12,37 +12,80 @@ jobs:
               run: |
                   echo "Below are the inputs passed to the workflow:"
                   echo "${{ toJson(github.event) }}"
-    pr_commented_review:
+    run_review:
         name: "Run the workflow to generate a review"
         needs: echo_details
         if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Review' }}
-        uses: ./.github/workflows/manual.yml
-        with:
-            type: "review"
-            pr_number: "${{ github.event.pull_request.number || github.event.issue.number }}"
-            repo: ${{ github.event.repository.full_name }}
-            owner: ${{ github.event.repository.owner.login }}
-        secrets:
-            MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
-            MODEL_REVIEW_JWT: ${{ secrets.JWT }}
-            GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-    pr_commented_summary:
+        runs-on: ubuntu-latest
+        env:
+            TYPE: "summary"
+            PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+            REPO: ${{ github.event.repository.full_name }}
+            OWNER: ${{ github.event.repository.owner.login }}
+        steps:
+            - name: Run Review
+              run: |
+                  echo "Running Review"
+                  echo "Pull Request Number: ${{ env.PR_NUMBER }}"
+                  echo "Repository: ${{ env.REPO }}"
+                  echo "Owner: ${{ env.OWNER }}"
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Get PR diff from GitHub API
+              env:
+                  PR_NUMBER: ${{env.PR_NUMBER}}
+                  REPO: ${{ env.REPO }}
+              run: |
+                  echo "Fetching PR #$PR_NUMBER diff from API"
+
+                  curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+                       -H "Accept: application/vnd.github.v3+json" \
+                       "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/files" \
+                       > diff.json
+
+            - name: Upload diff as artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: git-diff-json
+                  path: diff.json
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install dependencies
+              run: npm install @actions/core @actions/github @google/genai
+
+            - uses: actions/download-artifact@v4
+              with:
+                  name: git-diff-json
+
+            - name: Run Review Script
+              run: node .github/scripts/review.js
+              env:
+                  GITHUB_AUTH: ${{ secrets.GITHUB_TOKEN }}
+                  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+                  PR_NUMBER: ${{ env.PR_NUMBER }}
+                  GITHUB_REPOSITORY: ${{ env.REPO }}
+
+    run_summary:
         name: "Run the workflow to generate a summary"
         needs: echo_details
         if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Summary' }}
-        uses: ./.github/workflows/manual.yml
-        with:
-            type: "summary"
-            pr_number: "${{ github.event.pull_request.number || github.event.issue.number }}"
-            repo: ${{ github.event.repository.full_name }}
-            owner: ${{ github.event.repository.owner.login }}
-        secrets:
-            MODEL_REVIEW_CALLBACK: ${{ secrets.MODEL_REVIEW_CALLBACK }}
-            MODEL_REVIEW_JWT: ${{ secrets.JWT }}
-            GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Run Summary
+              run: |
+                  echo "Running Summary"
+                  echo "Pull Request Number: ${{ github.event.issue.number }}"
     finalize:
         name: "Finish up the flow"
-        needs: [pr_commented_review, pr_commented_summary]
+        needs: [run_review, run_summary]
         if: (needs.pr_commented_review.result == 'skipped' || needs.pr_commented_summary.result == 'skipped') || success()
         runs-on: ubuntu-latest
         steps:
