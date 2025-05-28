@@ -8,7 +8,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 (async () => {
     try {
-        const token = process.env.GITHUB_AUTH;
+        const token = core.getInput("GITHUB_AUTH");
         const prNumber = process.env.PR_NUMBER;
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
         const diffPath = path.resolve("diff.json");
