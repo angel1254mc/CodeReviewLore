@@ -94,12 +94,14 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
             }
         }
 
+        console.log("Creating Review with comments:", reviewComments);
         await octokit.rest.pulls.createReview({
             owner,
             repo,
             pull_number: Number(prNumber),
             body: reviewBody,
             event: reviewAction,
+            comments: reviewComments,
         });
 
         console.log(`✅ Posted ${comments.length} review comment(s)`);
