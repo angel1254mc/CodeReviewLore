@@ -7,32 +7,29 @@ jobs:
     echo_details:
         name: Print details for debugging
         runs-on: ubuntu-latest
+        outputs:
+            type: ${{ steps.check.outputs.type }}
         steps:
             - name: Echo details
               run: |
                   echo "Below are the inputs passed to the workflow:"
                   echo "${{ toJson(github.event) }}"
-    run_review:
-        name: "Run the workflow to generate a review"
-        needs: echo_details
-        if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Review' }}
-        runs-on: ubuntu-latest
-        env:
-            TYPE: "summary"
-            PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
-            REPO: ${{ github.event.repository.full_name }}
-            OWNER: ${{ github.event.repository.owner.login }}
-        steps:
-            - name: Run Review
+            - name: Check if comment is 'Review' or 'Summary'
+              id: check
               run: |
-                  echo "Running Review"
-                  echo "Pull Request Number: ${{ env.PR_NUMBER }}"
-                  echo "Repository: ${{ env.REPO }}"
-                  echo "Owner: ${{ env.OWNER }}"
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+                  echo "Checking if the comment is 'Review' or 'Summary'"
+                  if [[ "${{ github.event.comment.body }}" == "Review" ]]; then
+                      echo "type=review" >> $GITHUB_OUTPUT
+                  elif [[ "${{ github.event.comment.body }}" == "Summary" ]]; then
+                      echo "type=summary" >> $GITHUB_OUTPUT
+                  else
+                      echo "type=none" >> $GITHUB_OUTPUT
+                  fi
+            - name: End early if not Review or Summary
+              if: steps.check.outputs.type == 'none'
+              run: |
+                  echo "Comment is neither 'Review' nor 'Summary'. Exiting early."
+                  exit 0
             - name: Get PR diff from GitHub API
               env:
                   PR_NUMBER: ${{env.PR_NUMBER}}
@@ -51,6 +48,29 @@ jobs:
               with:
                   name: git-diff-json
                   path: diff.json
+
+    run_review:
+        name: "Run the workflow to generate a review"
+        needs: echo_details
+        if: ${{  needs.echo_details.outputs.type == 'review' && github.event.issue.pull_request }}
+        runs-on: ubuntu-latest
+        env:
+            TYPE: "summary"
+            PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+            REPO: ${{ github.event.repository.full_name }}
+            OWNER: ${{ github.event.repository.owner.login }}
+        steps:
+            - name: Run Review
+              run: |
+                  echo "Running Review"
+                  echo "Pull Request Number: ${{ env.PR_NUMBER }}"
+                  echo "Repository: ${{ env.REPO }}"
+                  echo "Owner: ${{ env.OWNER }}"
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
             - name: Checkout code
               uses: actions/checkout@v4
 
@@ -77,7 +97,7 @@ jobs:
     run_summary:
         name: "Run the workflow to generate a summary"
         needs: echo_details
-        if: ${{ github.event.issue.pull_request && github.event.comment.body == 'Summary' }}
+        if: ${{  needs.echo_details.outputs.type == 'summary' && github.event.issue.pull_request }}
         runs-on: ubuntu-latest
         steps:
             - name: Run Summary
